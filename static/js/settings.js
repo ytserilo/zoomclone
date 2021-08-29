@@ -315,7 +315,7 @@ class SettingsComponent extends React.Component {
     })), /*#__PURE__*/React.createElement("video", {
       id: "settings-video",
       style: {
-        height: "250px"
+        height: "200px"
       },
       autoplay: "true",
       playsinline: "true"

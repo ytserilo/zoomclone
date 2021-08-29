@@ -302,7 +302,7 @@ class SettingsComponent extends React.Component{
         <button type="button" name="button" onClick={this.close_settings}>
           <img src="/static/icons/times-solid.svg" />
         </button>
-        <video id="settings-video" style={{height: "250px"}} autoplay="true" playsinline="true"></video>
+        <video id="settings-video" style={{height: "200px"}} autoplay="true" playsinline="true"></video>
         {video_devices}
 
         {audio_devices}
