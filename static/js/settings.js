@@ -209,18 +209,11 @@ class SettingsComponent extends React.Component {
         cache_manager.put("selected-device", JSON.stringify(init_cache_data));
       }
 
-      console.log(devices_state); // devices_state["selected-device"] = {
-      //   "video": devices_state["videoinput"][0]["id"],
-      //   "audio": devices_state["audioinput"][0]["id"],
-      // };
-
       document.dispatchEvent(new CustomEvent("media-device", {
         detail: devices_state["selected-device"]
       }));
       self.setState(devices_state);
-    }).catch(function (err) {
-      console.log(err);
-    });
+    }).catch(function (err) {});
   }
 
   async device_select(e, obj_type) {
@@ -321,6 +314,7 @@ class SettingsComponent extends React.Component {
       src: "/static/icons/times-solid.svg"
     })), /*#__PURE__*/React.createElement("video", {
       id: "settings-video",
+      style: "height: 250px;",
       autoplay: "true",
       playsinline: "true"
     }), video_devices, audio_devices, /*#__PURE__*/React.createElement("div", {

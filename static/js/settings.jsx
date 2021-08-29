@@ -205,17 +205,13 @@ class SettingsComponent extends React.Component{
 
       }
 
-      // devices_state["selected-device"] = {
-      //   "video": devices_state["videoinput"][0]["id"],
-      //   "audio": devices_state["audioinput"][0]["id"],
-      // };
       document.dispatchEvent(new CustomEvent("media-device", {
         detail: devices_state["selected-device"],
       }));
 
       self.setState(devices_state);
     }).catch(function(err){
-      
+
     })
   }
 
@@ -306,7 +302,7 @@ class SettingsComponent extends React.Component{
         <button type="button" name="button" onClick={this.close_settings}>
           <img src="/static/icons/times-solid.svg" />
         </button>
-        <video id="settings-video" autoplay="true" playsinline="true"></video>
+        <video id="settings-video" style="height: 250px;" autoplay="true" playsinline="true"></video>
         {video_devices}
 
         {audio_devices}
