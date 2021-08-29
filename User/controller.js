@@ -1,5 +1,9 @@
+console.log(__dirname);
+let main_dir = __dirname.split("/");
+main_dir = main_dir.slice(0, main_dir.length - 1).join("/")
+
 const crypto = require("crypto");
-const client = require(__dirname + "/settings.js");
+const client = require(main_dir + "/settings.js");
 const user_model = require("./model.js");
 
 const BOT_TOKEN = "1940505631:AAG5vi25Ebjpu4v1oaBcpYMd5VjGRUm-tBc";

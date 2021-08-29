@@ -1,5 +1,9 @@
-const user_model = require(__dirname + "/User/model.js");
-const client = require(__dirname + "/settings.js");
+console.log(__dirname);
+let main_dir = __dirname.split("/");
+main_dir = main_dir.slice(0, main_dir.length - 1).join("/")
+
+const user_model = require(main_dir + "/User/model.js");
+const client = require(main_dir + "/settings.js");
 
 
 module.exports = function(req, resp, next){

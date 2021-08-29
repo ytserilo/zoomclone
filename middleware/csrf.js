@@ -1,7 +1,11 @@
-const client = require(__dirname + "/settings.js");
+console.log(__dirname);
+let main_dir = __dirname.split("/");
+main_dir = main_dir.slice(0, main_dir.length - 1).join("/")
+
+const client = require(main_dir + "/settings.js");
 const crypto = require("crypto");
 
-const user_model = require(__dirname + "/User/model.js");
+const user_model = require(main_dir + "/User/model.js");
 
 function uuidv4() {
  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
