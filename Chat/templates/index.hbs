@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="module" src="/static/js/event_loop.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react-router-dom/umd/react-router-dom.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <button type="button" id="permission-btn" style="display: none;" name="button">Get Permissions</button>
+    <div class="main-container">
+      <div class="container">
+        {{#if user}}
+
+          <div class="invent-modal" style="width: 0">
+
+          </div>
+          <script type="text/javascript">
+            function event_handler(){
+              document.querySelector("#offer_view").setAttribute("style", "");
+
+              document.querySelector("#offer_view").onclick = function(){
+                let invent_block = document.querySelector(".invent-modal");
+
+                if(invent_block.getAttribute("style") == ""){
+                  invent_block.setAttribute("style", "width: 0");
+                }
+                else{
+                  invent_block.setAttribute("style", "")
+                }
+              }
+
+              document.removeEventListener("open-manage-button", event_handler);
+            }
+
+            document.addEventListener("open-manage-button", event_handler);
+
+          </script>
+          <script src="/static/js/room_manage.js"></script>
+        {{/if}}
+        <div class="video-block">
+
+        </div>
+
+        <div class="chat-block">
+          <div class="chat">
+
+          </div>
+
+          <div id="message-input-block-wrapper">
+
+          </div>
+
+        </div>
+      </div>
+      <div class="user-settings">
+
+      </div>
+      <div id="record-controll">
+
+      </div>
+    </div>
+    <div class="settings-modal">
+
+    </div>
+    <style media="screen">
+      .wait-modal{
+        position: fixed;
+        background: rgba(0,0,0,0.9);
+        width: 100%;
+        height: 100%;
+        z-index: 99;
+      }
+      .modal-container{
+        width: 280px;
+        height: auto;
+        background: white;
+        padding: 1px 10px 10px 10px;
+        border-radius: 10px;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        left: 50%;
+      }
+      .modal-container .body{
+        font-size: 1.25rem;
+      }
+      .modal-container .footer button{
+        width: initial;
+        height: initial;
+        padding: 10px;
+        border: 1px solid;
+        border-radius: 10px;
+      }
+    </style>
+    <div class="wait-modal">
+      <div class="modal-container">
+        <div class="body">
+          <p>Please wait while the creator {{room.user.first_name}} {{room.user.last_name}} of the room accepts your request.</p>
+        </div>
+        <div class="footer">
+          <button id="send-offer" style="display: none;" type="button" name="button">Send offer</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("/static/js/sw.js", {"scope": "/"}).then(function(registration){
+          navigator.serviceWorker.controller = registration.active;
+        }).catch(function(err){
+          console.log(err);
+        });
+      }
+    </script>
+    <script type="text/javascript">
+      // "user": false,
+      // "room": {
+      //   "name": room_obj.name,
+      //   "user": request.user,
+      // },
+      let wait_modal = document.querySelector(".wait-modal");
+      let send_offer_button = document.querySelector("#send-offer");
+
+      send_offer_button.addEventListener("click", function(){
+        let status_block = wait_modal.querySelector(".body p");
+        document.dispatchEvent(new Event("restart-conn"));
+        let text = "Please wait while the creator {{room.user.first_name}} {{room.user.last_name}} of the room accepts your request."
+        status_block.innerText = text;
+        send_offer_button.setAttribute("style", "display: none;");
+      });
+
+      if("{{user.id}}" == ""){
+        function room_control(e){
+          let data = e.detail;
+          if(data["type"] == "success"){
+            wait_modal.setAttribute("style", "display: none;");
+            document.removeEventListener("room-control", room_control);
+          }
+          else{
+            let status_block = wait_modal.querySelector(".body p");
+            status_block.innerText = "The room creator {{room.user.first_name}} {{room.user.last_name}} canceled your request. To send the request, click the Send Offer button again.";
+            send_offer_button.setAttribute("style", "");
+          }
+        }
+        document.addEventListener("room-control", room_control);
+      }
+      else{
+        wait_modal.setAttribute("style", "display: none;");
+      }
+
+    </script>
+    <script type="module" src="/static/js/chat_manager.js"></script>
+    <script type="module" src="/static/js/settings.js"></script>
+
+  </body>
+</html>

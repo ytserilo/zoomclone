@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/css/user_style.css">
+  </head>
+  <body>
+
+   {{#if user}}
+    <input type="hidden" id="csrf" value="{{csrf_token}}">
+    <div class="user">
+      <button id="user-profile" type="button" name="button">
+        <img src="/static/icons/unnamed.png" alt="">
+      </button>
+      <div class="user-dropdown user-dropdown-close">
+        <p>{{user.first_name}} {{user.last_name}}</p>
+
+        <a href="/logout">logout</a>
+      </div>
+    </div>
+    <script type="text/javascript">
+      let btn = document.querySelector("#user-profile");
+      btn.onclick = function(){
+        let div = btn.parentElement.querySelector(".user-dropdown");
+        if(div.getAttribute("class") == "user-dropdown user-dropdown-close"){
+          div.setAttribute("class", "user-dropdown user-dropdown-open");
+        }
+        else{
+          div.setAttribute("class", "user-dropdown user-dropdown-close");
+        }
+      }
+    </script>
+    <div class="main-container">
+
+    </div>
+    {{else}}
+     <script async src="https://telegram.org/js/telegram-widget.js?15" data-telegram-login="OAuthenticate_bot" data-size="large" data-onauth="onTelegramAuth(user)"></script>
+     <script type="text/javascript">
+       async function onTelegramAuth(user) {
+         let response = await fetch("/", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify(user),
+         });
+         let data = await response.json();
+         console.log(data);
+         if(data["result"] == true){
+           document.location.reload();
+         }
+
+       }
+     </script>
+   {{/if}}
+   <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+   <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+   <script type="text/babel">
+    class RoomComponent extends React.Component{
+      constructor(props){
+        super(props);
+        this.change_name = this.change_name.bind(this);
+        this.apply_changes = this.apply_changes.bind(this);
+        this.delete_room = this.delete_room.bind(this);
+
+        this.state = {"time": "", "apply-event": undefined, "error_message": ""};
+        this.ticker = this.ticker.bind(this);
+        this.ticker();
+      }
+
+      ticker(){
+        const self = this;
+
+        let interval_id;
+        interval_id = setInterval(function(){
+          let start = new Date(self.props.time);
+          let now = new Date();
+
+          let default_delay = 1000 * 60 * 60 * 24;
+          let delay = now - start;
+
+          delay = default_delay - delay;
+          if(delay < 0){
+            clearInterval(interval_id);
+            self.props.on_delete.dispatchEvent(new CustomEvent("delete", {
+              detail: {
+                id: self.props.id
+              }
+            }));
+          }
+
+          let delay_hours = delay / 1000 / 60 / 60;
+
+          let hours = Math.floor(delay_hours);
+          let minutes = Math.floor((delay_hours - hours) * 60);
+          let seconds = ((delay_hours - hours) * 60) - minutes;
+          seconds = Math.floor(seconds * 60);
+
+          if(String(hours).length == 1){
+            hours = "0"+String(hours);
+          }
+          if(String(minutes).length == 1){
+            minutes = "0"+String(minutes);
+          }
+          if(String(seconds).length == 1){
+            seconds = "0"+String(seconds);
+          }
+
+          self.setState({"time": `${hours}:${minutes}:${seconds}`});
+        }, 100);
+      }
+
+      change_name(e){
+        const self = this;
+
+        let self_element = e.target;
+        let parent_element = e.target.parentElement;
+
+        let input_tag = document.createElement("input");
+        input_tag.autofocus = true;
+        input_tag.value = self_element.innerText;
+
+
+        parent_element.replaceChild(input_tag, self_element);
+
+        let event_listener = new EventTarget();
+        async function on_apply(){
+          if(input_tag.value.length == 0){
+            self.setState({"error_message": "Name field not can to empty"});
+            return;
+          }
+          else if(self_element.innerText == input_tag.value){
+            event_listener.removeEventListener("apply", on_apply);
+            parent_element.replaceChild(self_element, input_tag);
+            self.setState({"apply-event": undefined});
+            input_tag.remove();
+
+            return;
+          }
+
+          let response = await fetch("/manage-room", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              "type": "edit-room",
+              "id": self.props.id,
+              "name": input_tag.value,
+              "csrf-token": document.getElementById("csrf").value,
+            })
+          });
+
+          let data = await response.json();
+          if(data["type"] == "success"){
+            self_element.innerText = input_tag.value;
+            self.setState({"error_message": ""});
+          }
+          else{
+            self.setState({"error_message": data["description"]});
+            return;
+          }
+
+          event_listener.removeEventListener("apply", on_apply);
+          parent_element.replaceChild(self_element, input_tag);
+          self.setState({"apply-event": undefined});
+          input_tag.remove();
+        }
+
+        event_listener.addEventListener("apply", on_apply)
+        this.setState({"apply-event": event_listener})
+      }
+
+      async delete_room(e){
+        const self = this;
+
+        let response = await fetch("/manage-room", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "type": "delete-room",
+            "id": self.props.id,
+            "csrf-token": document.getElementById("csrf").value,
+          })
+        });
+
+        let data = await response.json();
+        if(data["type"] == "success"){
+          self.props.on_delete.dispatchEvent(new CustomEvent("delete", {
+            detail: {
+              id: self.props.id
+            }
+          }));
+        }
+        else{
+          self.setState({"error_message": data["description"]});
+        }
+      }
+
+      apply_changes(e){
+         this.state["apply-event"].dispatchEvent(new Event("apply"));
+      }
+
+      render(){
+        let button_status;
+        if(this.state["apply-event"] == undefined){
+          button_status = {display: "none"};
+        }
+        else{
+          button_status = {display: "block"};
+        }
+        let error_style = {"display": "none"};
+
+        if(this.state.error_message != ""){
+          error_style = {};
+        }
+        let link = `/room/${this.props.id}`;
+        let astyle = {"margin-top": "4px"};
+
+        return <div class="room-block">
+          <div>
+            <div onClick={this.change_name}>{this.props.name}</div>
+            <a style={astyle} href={link}>{link}</a>
+            <div class="timer-block">
+              <span>{this.state.time}</span>
+            </div>
+            <div class="control-block">
+              <button style={button_status} type="button" name="button" onClick={this.apply_changes}>Apply</button>
+              <button type="button" name="button" onClick={this.delete_room}>Delete</button>
+            </div>
+          </div>
+
+          <span style={error_style} class="error-message">{this.state.error_message}</span>
+        </div>
+      }
+    }
+
+    class Rooms extends React.Component{
+      constructor(props){
+        super(props);
+
+        this.nameField = React.createRef();
+        this.create_room = this.create_room.bind(this);
+
+        this.state = {"rooms": [], "error_message": ""}; // {room_id: component, }
+        this.init();
+      }
+
+      async init(){
+        const self = this;
+
+        let response = await fetch("/", {
+          method: "GET",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        });
+
+        let data = await response.json();
+        let rooms = [];
+        if(data["type"] == "success"){
+          for(let i = 0; i < data["rooms"].length; i++){
+            let room = data["rooms"][i];
+            let event_target = new EventTarget();
+
+            function on_delete(e){
+              for(let i = 0; i < self.state["rooms"].length; i++){
+                if(self.state["rooms"][i].props.id == e.detail["id"]){
+                  self.state["rooms"].splice(i, 1);
+                  self.setState({"rooms": self.state["rooms"]});
+                  break;
+                }
+              }
+              event_target.removeEventListener("delete", on_delete);
+            }
+            event_target.addEventListener("delete", on_delete);
+
+            let component = [true].map((item) => {
+                return <RoomComponent id={room["id"]} on_delete={event_target} time={room["date_created"]} name={room["name"]}/>
+            });
+            rooms.push(component[0]);
+          }
+
+          this.setState({"rooms": rooms});
+        }
+      }
+
+      async create_room(e){
+        const self = this;
+
+        let room_name = this.nameField.current.value;
+        if(room_name.length == 0){
+          self.setState({"error_message": "Name field os not empty"});
+          return;
+        }
+
+        let response = await fetch("/manage-room", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "type": "create-room",
+            "name": room_name,
+            "csrf-token": document.getElementById("csrf").value,
+          })
+        });
+
+        let data = await response.json();
+        if(data["type"] == "error"){
+          self.setState({"error_message": data["description"]})
+        }
+        else{
+          this.nameField.current.value = "";
+          let room = data["room"];
+
+          let event_target = new EventTarget();
+
+          function on_delete(e){
+            for(let i = 0; i < self.state["rooms"].length; i++){
+              if(self.state["rooms"][i].props.id == e.detail["id"]){
+                self.state["rooms"].splice(i, 1);
+                self.setState({"rooms": self.state["rooms"]});
+                break;
+              }
+            }
+            event_target.removeEventListener("delete", on_delete);
+          }
+          event_target.addEventListener("delete", on_delete);
+
+          let component = [true].map((item) => {
+              return <RoomComponent id={room["id"]} on_delete={event_target} time={room["date_created"]} name={room["name"]}/>
+          });
+
+          this.state.rooms.push(component[0]);
+          this.setState({"rooms": this.state.rooms, "error_message": ""});
+        }
+      }
+
+      render(){
+        let error_style = {"display": "none"};
+        if(this.state.error_message != ""){
+          error_style = {};
+        }
+        let div_style = {"margin-bottom": "10px"};
+
+        return <div class="rooms">
+          <div class="room-objects">
+            {
+              this.state["rooms"].map(function(item){
+                return item
+              })
+            }
+          </div>
+          <div class="create-room-block">
+            <div style={div_style}>
+              <input type="text" ref={this.nameField}/>
+              <button type="button" name="button" onClick={this.create_room}>Create room</button>
+            </div>
+            <span style={error_style} class="error-message">{this.state.error_message}</span>
+          </div>
+        </div>
+      }
+    }
+
+    ReactDOM.render(
+      <Rooms/>,
+      document.querySelector(".main-container")
+    )
+   </script>
+   <script type="text/javascript">
+     if ('serviceWorker' in navigator) {
+       navigator.serviceWorker.register("/static/js/sw.js", {"scope": "/"}).then(function(registration){
+         navigator.serviceWorker.controller = registration.active;
+       }).catch(function(err){
+         console.log(err);
+       });
+     }
+   </script>
+  </body>
+</html>
