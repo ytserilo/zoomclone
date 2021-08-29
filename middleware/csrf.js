@@ -1,7 +1,7 @@
-const client = require("/home/yardzen/oly/settings.js");
+const client = require(__dirname + "/settings.js");
 const crypto = require("crypto");
 
-const user_model = require("/home/yardzen/oly/User/model.js");
+const user_model = require(__dirname + "/User/model.js");
 
 function uuidv4() {
  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

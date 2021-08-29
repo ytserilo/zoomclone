@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const client = require("/home/yardzen/oly/settings.js");
+const client = require(__dirname + "/settings.js");
 const user_model = require("./model.js");
 
 const BOT_TOKEN = "1940505631:AAG5vi25Ebjpu4v1oaBcpYMd5VjGRUm-tBc";

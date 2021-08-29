@@ -1,5 +1,5 @@
-const user_model = require("/home/yardzen/oly/User/model.js");
-const client = require("/home/yardzen/oly/settings.js");
+const user_model = require(__dirname + "/User/model.js");
+const client = require(__dirname + "/settings.js");
 
 
 module.exports = function(req, resp, next){
@@ -40,7 +40,7 @@ module.exports = function(req, resp, next){
       req.user = false;
       return;
     }
-    
+
     let user_obj = await user_model.User.findByPk(Number(user_id));
 
     if(user_obj == false){
