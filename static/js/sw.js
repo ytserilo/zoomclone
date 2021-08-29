@@ -159,7 +159,7 @@ self.addEventListener('fetch', (event) => {
               controller.enqueue(uint8array);
 
               file_waiter.read().then(process_data);
-            }).catch(function(err){console.log(err);});
+            }).catch(function(err){});
           }
         });
         let headers = {

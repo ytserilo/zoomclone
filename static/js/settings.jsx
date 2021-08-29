@@ -204,7 +204,7 @@ class SettingsComponent extends React.Component{
         cache_manager.put("selected-device", JSON.stringify(init_cache_data));
 
       }
-      console.log(devices_state);
+
       // devices_state["selected-device"] = {
       //   "video": devices_state["videoinput"][0]["id"],
       //   "audio": devices_state["audioinput"][0]["id"],
@@ -215,7 +215,7 @@ class SettingsComponent extends React.Component{
 
       self.setState(devices_state);
     }).catch(function(err){
-      console.log(err);
+      
     })
   }
 
