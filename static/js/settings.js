@@ -314,7 +314,9 @@ class SettingsComponent extends React.Component {
       src: "/static/icons/times-solid.svg"
     })), /*#__PURE__*/React.createElement("video", {
       id: "settings-video",
-      style: "height: 250px;",
+      style: {
+        height: "250px"
+      },
       autoplay: "true",
       playsinline: "true"
     }), video_devices, audio_devices, /*#__PURE__*/React.createElement("div", {
