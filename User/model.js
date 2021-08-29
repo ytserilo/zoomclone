@@ -1,7 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const sequelize = new Sequelize("heroku_4a7c121306a27f8", "bd0742c8718dc9", "zWTVSHCMRBQ1", {
+// mysql://bd0742c8718dc9:f91ca089@eu-cdbr-west-01.cleardb.com/heroku_4a7c121306a27f8?reconnect=true
+const sequelize = new Sequelize("heroku_4a7c121306a27f8", "bd0742c8718dc9", "f91ca089", {
   dialect: "mysql",
-  host: "localhost",
+  host: "eu-cdbr-west-01.cleardb.com",
   define: {
     timestamps: false
   }
@@ -52,6 +53,6 @@ User.hasMany(Room);
 module.exports.User = User;
 module.exports.Room = Room;
 
-//sequelize.sync({raw: true}).then(result=>{
+sequelize.sync({raw: true}).then(result=>{
   //console.log(result);
-//})
+})
