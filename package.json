@@ -1,6 +1,10 @@
 {
-  "name": "expressapp",
+  "name": "zoomclone",
   "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
   "dependencies": {
     "cookie-parser": "^1.4.5",
     "crypto-js": "^4.1.1",
