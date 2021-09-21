@@ -315,6 +315,7 @@ class MessageObj extends React.Component{
     // }));
   }
 
+
   render(){
     let obj;
     let button;
@@ -336,7 +337,7 @@ class MessageObj extends React.Component{
           {button}
           <div>
             <span>{this.props.file.file_name}</span>
-            <span>{this.props.file.size} Kb</span>
+            <span>{this.props.file.size / 1024} Kb</span>
           </div>
         </div>
       </div>;

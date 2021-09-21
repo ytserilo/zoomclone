@@ -304,7 +304,6 @@ class SettingsComponent extends React.Component{
         </button>
         <video id="settings-video" style={{height: "200px"}} autoplay="true" playsinline="true"></video>
         {video_devices}
-
         {audio_devices}
         <div class="visualize-audio-container">
           <span id="audio-line"></span>

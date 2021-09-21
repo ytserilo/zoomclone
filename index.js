@@ -10,7 +10,6 @@ const user_model = require("./User/model.js");
 const EventEmitter = require('events');
 const WebSocket = require('ws');
 
-// https://api.telegram.org/bot1940505631:AAG5vi25Ebjpu4v1oaBcpYMd5VjGRUm-tBc/setWebhook?url=https://74e6532cbc5e.ngrok.io/telegram_webhook
 
 function uuidv4() {
  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -47,7 +46,6 @@ class RoomEmitter extends EventEmitter {}
 const room_emitter = new RoomEmitter();
 
 async function onConnect(wsClient, req) {
-  // if you owner open room else send request to connect
   let parts = req.url.split("?");
   let session_part = parts.find(function(item){
     if(item.startsWith("session-id") == true){
@@ -75,7 +73,7 @@ async function onConnect(wsClient, req) {
   }
 
   let roomObj = await user_model.Room.findByPk(room_id);
-  console.log(roomObj.dataValues, req.user.id)
+
   if(roomObj == null){
     wsClient.send(JSON.stringify({"type": "redirect"}));
     wsClient.close();

@@ -1,8 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
-// mysql://bd0742c8718dc9:f91ca089@eu-cdbr-west-01.cleardb.com/heroku_4a7c121306a27f8?reconnect=true
-const sequelize = new Sequelize("heroku_4a7c121306a27f8", "bd0742c8718dc9", "f91ca089", {
+
+const sequelize = new Sequelize("usersdb", "root", "123456", {
   dialect: "mysql",
-  host: "eu-cdbr-west-01.cleardb.com",
+  host: "localhost",
   define: {
     timestamps: false
   }
