@@ -1,4 +1,3 @@
-console.log(__dirname);
 let main_dir = __dirname.split("/");
 main_dir = main_dir.slice(0, main_dir.length - 1).join("/")
 

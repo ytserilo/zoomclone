@@ -9,14 +9,13 @@ function uint8_to_array(u8a){
 
 
 export class FileUploader{
-  upload_file(connection_manager, file, file_id, key){
+  upload_file(channel, file, file_id, key){
     const size = file.size;
     const file_type = file.type;
 
     let stream = file.stream();
     const reader = stream.getReader();
 
-    let channel = connection_manager.active_connections[key].channel;
 
     let count_chunks = 0;
     reader.read().then(function process_data({done, value}) {

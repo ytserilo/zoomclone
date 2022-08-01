@@ -221,6 +221,7 @@ export class RTC extends EventTarget{
 
     this.rtc.createAnswer().then(async function(answer){
       let settings_data = self.get_codecs(answer.sdp);
+
       let new_sdp = self.choose_codec({"video": "H264"}, settings_data, answer.sdp);
       answer.sdp = new_sdp;
 
